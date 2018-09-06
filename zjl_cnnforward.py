@@ -7,7 +7,7 @@ import tensorflow as tf
 IMAGE_WIDTH = 128
 IMAGE_HIGH = 256
 NUM_CHANNELS = 3
-OUTPUT_NODE = 2
+OUTPUT_NODE = 3
 
 def get_weight(shape, regularizer):
     w = tf.Variable(tf.truncated_normal(shape,stddev=0.1))
@@ -180,8 +180,8 @@ def forward(x, train, regularizer):
 
     with tf.variable_scope("fc8"):
         fc8_weight = tf.Variable(
-            tf.truncated_normal([256, 2], mean=0.0, stddev=1.0, dtype=tf.float32, name="fc8_Weight"))
-        fc8_bias = tf.Variable(tf.constant(0.0, dtype=tf.float32, shape=[2], name="fc8_bias"))
+            tf.truncated_normal([256, OUTPUT_NODE], mean=0.0, stddev=1.0, dtype=tf.float32, name="fc8_Weight"))
+        fc8_bias = tf.Variable(tf.constant(0.0, dtype=tf.float32, shape=[OUTPUT_NODE], name="fc8_bias"))
 
         if train:
             fc8 = tf.matmul(fc7_drop, fc8_weight)

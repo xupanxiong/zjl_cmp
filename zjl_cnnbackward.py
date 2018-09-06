@@ -8,7 +8,7 @@ import zjl_TFRecord
 import zjl_config as zjlconf
 
 
-BATCH_SIZE = 10
+BATCH_SIZE = 32
 LEARNING_RATE_BASE = 0.1
 LEARNING_RATE_DECAY = 0.99
 REGULARIZER = 0.0001
@@ -16,7 +16,7 @@ STEPS = 500000
 MOVING_AVERAGE_DECAY = 0.99
 MODEL_SAVE_PATH = "./model/"
 MODEL_NAME = "zjl_model"
-train_num_examples = 72010*9
+train_num_examples = 106410*9
 
 def backward():
     x = tf.placeholder(tf.float32, [
@@ -71,7 +71,7 @@ def backward():
                 zjl_cnnforward.IMAGE_HIGH,
                 zjl_cnnforward.NUM_CHANNELS))
             _, loss_value, step = sess.run([train_op, loss, global_step], feed_dict={x: reshaped_xs, y_: ys})
-            if i % 100 == 0:
+            if i % 1000 == 0:
                 print("After %d training step(s), loss on training batch is %g." % (step, loss_value))
                 saver.save(sess, os.path.join(MODEL_SAVE_PATH, MODEL_NAME), global_step=global_step)
 

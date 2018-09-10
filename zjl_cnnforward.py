@@ -4,8 +4,7 @@ cnnforward-file, build the network
 '''
 
 import tensorflow as tf
-IMAGE_WIDTH = 128
-IMAGE_HIGH = 256
+
 NUM_CHANNELS = 3
 OUTPUT_NODE = 3
 

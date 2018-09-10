@@ -5,6 +5,10 @@ import numpy as np
 import zjl_cnnforward
 import zjl_cnnbackward
 import zjl_TFRecord
+import zjl_config as zjlconf
+
+IMAGE_WIDTH = zjlconf.IMAGE_WIDTH
+IMAGE_HIGH = zjlconf.IMAGE_HIGH
 
 TEST_INTERVAL_SECS = 5
 TEST_NUM = 100  # 1
@@ -14,8 +18,8 @@ def test():
     with tf.Graph().as_default() as g:
         x = tf.placeholder(tf.float32, [
             TEST_NUM,
-            zjl_cnnforward.IMAGE_HIGH,
-            zjl_cnnforward.IMAGE_WIDTH,
+            IMAGE_HIGH,
+            IMAGE_WIDTH,
             zjl_cnnforward.NUM_CHANNELS])
         y_ = tf.placeholder(tf.float32, [None, zjl_cnnforward.OUTPUT_NODE])
         y = zjl_cnnforward.forward(x, False, None)
@@ -40,13 +44,8 @@ def test():
                     threads = tf.train.start_queue_runners(sess=sess, coord=coord)  # 4
 
                     xs, ys = sess.run([img_batch, label_batch])  # 5
-                    reshaped_xs = np.reshape(xs, (
-                        TEST_NUM,
-                        zjl_cnnforward.IMAGE_HIGH,
-                        zjl_cnnforward.IMAGE_WIDTH,
-                        zjl_cnnforward.NUM_CHANNELS))
 
-                    accuracy_score = sess.run(accuracy, feed_dict={x: reshaped_xs, y_: ys})
+                    accuracy_score = sess.run(accuracy, feed_dict={x: xs, y_: ys})
 
                     print("After %s training step(s), test accuracy = %g" % (global_step, accuracy_score))
 

@@ -12,9 +12,9 @@ import cv2
 import zjl_config as zjlconf
 import random
 
-resize_width = 128
-resize_height = 256
-len_labels = 3
+IMAGE_WIDTH = zjlconf.IMAGE_WIDTH
+IMAGE_HIGH = zjlconf.IMAGE_HIGH
+len_labels = 2
 
 
 def write_tfRecord(tfRecordName, image_path, label_file):
@@ -27,10 +27,10 @@ def write_tfRecord(tfRecordName, image_path, label_file):
         value = content.split()
         img1 = cv2.imread(os.path.join(image_path,value[0]))
         img2 = cv2.imread(os.path.join(image_path,value[1]))
-        if value[0] ==value[1]:
-            img1 = rotate_bound(img1, 90 * random.randint(1, 3))
+        # if value[0] ==value[1]:
+        #     img1 = rotate_bound(img1, 90 * random.randint(1, 3))
         img = np.concatenate((img1, img2), axis=0)
-        img = cv2.resize(img, (resize_width,resize_height), interpolation=cv2.INTER_CUBIC)
+        #img = cv2.resize(img, (resize_width,resize_height), interpolation=cv2.INTER_CUBIC)
         img_raw = img.tobytes()
         labels = [0] * len_labels
         idx = value[2]
@@ -73,7 +73,7 @@ def read_tfRecord(tfRecord_path):
                                            'img_raw': tf.FixedLenFeature([], tf.string)
                                        })
     img = tf.decode_raw(features['img_raw'], tf.uint8)
-    img = tf.reshape(img, [resize_width, resize_height, 3])  # reshape为64*128的3通道图片
+    img = tf.reshape(img, [IMAGE_HIGH, IMAGE_WIDTH, 3])  # reshape为64*128的3通道图片
     img = tf.cast(img, tf.float32) * (1. / 255)
     label = tf.cast(features['label'], tf.float32)
     return img, label

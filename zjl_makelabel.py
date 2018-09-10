@@ -27,11 +27,11 @@ def traintxtgroupbylabel():
         for label in labelnames:
             zf.write(label)
 
-    pd_jpg = pd.DataFrame()
-    pd_jpg['jpg1'] = os.listdir(zjlconf.official_image_train_path)
-    pd_jpg['jpg2'] = pd_jpg['jpg1']
-    pd_jpg['label'] = 2
-    pd_jpg.to_csv(zjlconf.official_image_filelist,header=None,index=None,sep='\t')
+    # pd_jpg = pd.DataFrame()
+    # pd_jpg['jpg1'] = os.listdir(zjlconf.official_image_train_path)
+    # pd_jpg['jpg2'] = pd_jpg['jpg1']
+    # pd_jpg['label'] = 2
+    # pd_jpg.to_csv(zjlconf.official_image_filelist,header=None,index=None,sep='\t')
 
 def get20files(filename,times):
     with codecs.open(os.path.join(zjlconf.my_label_train_groupby_path,filename),'r',encoding='utf-8') as lf:
@@ -119,10 +119,10 @@ def createpath():
         print('directory already exists')
 
 def labelshuffl():
-    pd_jpg = pd.read_table(zjlconf.official_image_filelist,names = ['jpg1','jpg2','label'],header = None)
+    #pd_jpg = pd.read_table(zjlconf.official_image_filelist,names = ['jpg1','jpg2','label'],header = None)
     for file in os.listdir(zjlconf.my_label_train_path):
         pd_traini = pd.read_table(os.path.join(zjlconf.my_label_train_path,file),names = ['jpg1','jpg2','label'],header = None)
-        pd_traini = pd_traini.append(pd_jpg.sample(frac=0.9))
+        #pd_traini = pd_traini.append(pd_jpg.sample(frac=0.9))
         pd_traini = pd_traini.sample(frac=1)
         pd_traini.to_csv(os.path.join(zjlconf.my_label_train_shuffle_path,file),sep='\t',header=None,index=None)
 

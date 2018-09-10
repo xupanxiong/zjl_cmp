@@ -16,3 +16,6 @@ my_label_train_shuffle_path = './Mylabel/shufflelables'
 my_label_train_groupby_path = './Mylabel/groupby'
 my_label_groubpylist_file = './Mylabel/mygroubylabellist.txt'
 my_tfrecord_path = './data'
+
+IMAGE_WIDTH = 64
+IMAGE_HIGH = 128

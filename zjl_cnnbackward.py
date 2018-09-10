@@ -7,6 +7,8 @@ import numpy as np
 import zjl_TFRecord
 import zjl_config as zjlconf
 
+IMAGE_HIGH = zjlconf.IMAGE_HIGH
+IMAGE_WIDTH = zjlconf.IMAGE_WIDTH
 
 BATCH_SIZE = 10
 LEARNING_RATE_BASE = 0.1
@@ -16,13 +18,13 @@ STEPS = 500000
 MOVING_AVERAGE_DECAY = 0.99
 MODEL_SAVE_PATH = "./model/"
 MODEL_NAME = "zjl_model"
-train_num_examples = 72010*9
+train_num_examples = 72010*2
 
 def backward():
     x = tf.placeholder(tf.float32, [
         BATCH_SIZE,
-        zjl_cnnforward.IMAGE_WIDTH,
-        zjl_cnnforward.IMAGE_HIGH,
+        IMAGE_HIGH,   #图像行数
+        IMAGE_WIDTH,  #图像列数
         zjl_cnnforward.NUM_CHANNELS],
         name= "input_img")
     y_ = tf.placeholder(tf.float32, [None, zjl_cnnforward.OUTPUT_NODE],name='real_label')
@@ -65,12 +67,7 @@ def backward():
 
         for i in range(STEPS):
             xs, ys = sess.run([img_batch, label_batch])
-            reshaped_xs = np.reshape(xs, (
-                BATCH_SIZE,
-                zjl_cnnforward.IMAGE_WIDTH,
-                zjl_cnnforward.IMAGE_HIGH,
-                zjl_cnnforward.NUM_CHANNELS))
-            _, loss_value, step = sess.run([train_op, loss, global_step], feed_dict={x: reshaped_xs, y_: ys})
+            _, loss_value, step = sess.run([train_op, loss, global_step], feed_dict={x: xs, y_: ys})
             if i % 100 == 0:
                 print("After %d training step(s), loss on training batch is %g." % (step, loss_value))
                 saver.save(sess, os.path.join(MODEL_SAVE_PATH, MODEL_NAME), global_step=global_step)

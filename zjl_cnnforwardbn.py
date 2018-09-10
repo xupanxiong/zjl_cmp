@@ -4,8 +4,9 @@ cnnforward-file, build the network -- add bn
 '''
 
 import tensorflow as tf
-IMAGE_WIDTH = 256
-IMAGE_HIGH = 128
+import zjl_config as zjlconf
+IMAGE_WIDTH = zjlconf.IMAGE_WIDTH
+IMAGE_HIGH = zjlconf.IMAGE_HIGH
 NUM_CHANNELS = 3
 OUTPUT_NODE = 2
 

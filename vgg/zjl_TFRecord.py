@@ -15,7 +15,7 @@ import pandas as pd
 
 IMAGE_WIDTH = zjlconf.IMAGE_WIDTH
 IMAGE_HIGH = zjlconf.IMAGE_HIGH
-len_labels = 230
+len_labels = 300
 
 
 def write_tfRecord(tfRecordName, image_path, label_file):
@@ -28,13 +28,14 @@ def write_tfRecord(tfRecordName, image_path, label_file):
         value = content.split('\t')
         img = cv2.imread(os.path.join(image_path,value[0]))
         img_raw = img.tobytes()
-        labels = [0] * len_labels
-        idx = c2index(val=value[1],col_name='label')
-        labels[int(idx)] = 1
+        labels = label2wordvetor(value[1])
+        # labels = [0] * len_labels
+        # idx = c2index(val=value[1],col_name='label')
+        # labels[int(idx)] = 1
 
         example = tf.train.Example(features=tf.train.Features(feature={
             'img_raw': tf.train.Feature(bytes_list=tf.train.BytesList(value=[img_raw])),
-            'label': tf.train.Feature(int64_list=tf.train.Int64List(value=labels))
+            'label': tf.train.Feature(float_list=tf.train.FloatList(value=labels))
         }))
         writer.write(example.SerializeToString())
         num_pic += 1
@@ -64,7 +65,7 @@ def read_tfRecord(tfRecord_path):
     _, serialized_example = reader.read(filename_queue)
     features = tf.parse_single_example(serialized_example,
                                        features={
-                                           'label': tf.FixedLenFeature([len_labels], tf.int64),
+                                           'label': tf.FixedLenFeature([len_labels], tf.float32),
                                            'img_raw': tf.FixedLenFeature([], tf.string)
                                        })
     img = tf.decode_raw(features['img_raw'], tf.uint8)
@@ -89,16 +90,33 @@ def get_tfrecord(bathchsize, isTrain=True):
 
     return img_batch, label_batch
 
-def c2index(val='ZJL1',col_name='label'):
-    pd_attr = pd.read_table(zjlconf.official_label_list_file,header=None,names=['label','name'])
-    return list(pd_attr[col_name]).index(val.split('\n')[0])
+# def c2index(val='ZJL1',col_name='label'):
+#     pd_attr = pd.read_table(zjlconf.official_label_list_file,header=None,names=['label','name'])
+#     return list(pd_attr[col_name]).index(val.split('\n')[0])
+#
+# def index2ln(id):
+#     pd_attr = pd.read_table(zjlconf.official_label_list_file,header=None,names=['label','name'])
+#     return pd_attr.loc[id]['label'],pd_attr.loc[id]['name']
+#
+# def get300wordvetor(name='dog'):
+#     df_wordvetor = pd.read_table(zjlconf.official_word2vec_train_file,header=None,sep=" ",index_col=0)
+#     return df_wordvetor.loc[name]
 
-def index2ln(id):
-    pd_attr = pd.read_table(zjlconf.official_label_list_file,header=None,names=['label','name'])
-    return pd_attr.loc[id]['label'],pd_attr.loc[id]['name']
+def label2name(label='ZJL01'):
+    df_name = pd.read_table(zjlconf.official_label_list_file, header=None, sep="\t", names=['label', 'name'],index_col='label')
+    return df_name.loc[label]['name']
+
+def name2wordvetor(name='dog'):
+    df_wv = pd.read_table(zjlconf.official_word2vec_train_file, header=None, sep=" ", index_col=0)
+    return df_wv.loc[name]
+
+def label2wordvetor(label='ZJL01'):
+    name = label2name(label.split()[0])
+    return name2wordvetor(name)
 
 def main():
     generate_tfRecord()
+
 
 if __name__ == '__main__':
     main()

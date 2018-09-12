@@ -10,7 +10,7 @@ official_label_train_file = '../DatasetA_train_20180813/train.txt'
 official_word2vec_train_file = '../DatasetA_train_20180813/class_wordembeddings.txt'
 official_atrribute_train_file = '../DatasetA_train_20180813/attribute_list.txt'
 official_label_list_file = '../DatasetA_train_20180813/label_list.txt'
-official_image_filelist = './Mylabel/jpg.txt'
+official_word_cosdist_file = '../DatasetA_train_20180813/cos_distance.txt'
 
 my_label_train_path = './Mylabel'
 my_label_train = './Mylabel/mytrain.txt'

@@ -1,7 +1,6 @@
 # coding:utf-8
 import tensorflow as tf
 import zjl_cnnforward
-import zjl_cnnforwardbn
 import os
 import numpy as np
 import zjl_TFRecord
@@ -10,7 +9,7 @@ import zjl_config as zjlconf
 IMAGE_HIGH = zjlconf.IMAGE_HIGH
 IMAGE_WIDTH = zjlconf.IMAGE_WIDTH
 
-BATCH_SIZE = 32
+BATCH_SIZE = 2
 LEARNING_RATE_BASE = 0.1
 LEARNING_RATE_DECAY = 0.99
 REGULARIZER = 0.0001
@@ -19,6 +18,14 @@ MOVING_AVERAGE_DECAY = 0.99
 MODEL_SAVE_PATH = "./model/"
 MODEL_NAME = "zjl_model"
 train_num_examples = 72010*9
+
+def distcos(y1,y2):
+    x3_norm = tf.sqrt(tf.reduce_sum(tf.square(y1), axis=1))
+    x4_norm = tf.sqrt(tf.reduce_sum(tf.square(y2), axis=1))
+    # 内积
+    x3_x4 = tf.reduce_sum(tf.multiply(y1, y2), axis=1)
+    cosin = x3_x4 / (x3_norm * x4_norm)
+    return cosin
 
 def backward():
     x = tf.placeholder(tf.float32, [
@@ -31,10 +38,9 @@ def backward():
     y = zjl_cnnforward.forward(x, True, REGULARIZER)
     global_step = tf.Variable(0, trainable=False)
 
-    ce = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=y,labels=tf.argmax(y_, 1))
-    cem = tf.reduce_mean(ce)
-    #loss = cem + tf.add_n(tf.get_collection('losses'))
-    loss = cem
+    dist = distcos(y1=y,y2=y_)
+    loss = tf.reduce_mean(tf.square(1-dist))
+    #loss = tf.reduce_sum(1-dist)
 
     learning_rate = tf.train.exponential_decay(
         LEARNING_RATE_BASE,
@@ -62,7 +68,6 @@ def backward():
 
         coord = tf.train.Coordinator()  # 4
         threads = tf.train.start_queue_runners(sess=sess, coord=coord)  # 5
-
 
         for i in range(STEPS):
             xs, ys = sess.run([img_batch, label_batch])

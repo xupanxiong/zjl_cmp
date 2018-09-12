@@ -6,7 +6,7 @@ cnnforward-file, build the network
 import tensorflow as tf
 
 NUM_CHANNELS = 3
-OUTPUT_NODE = 2
+OUTPUT_NODE = 300
 
 def get_weight(shape, regularizer):
     w = tf.Variable(tf.truncated_normal(shape,stddev=0.1))
